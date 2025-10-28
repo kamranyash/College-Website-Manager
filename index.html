@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Essay Manager</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1><i class="fas fa-graduation-cap"></i> College Essay Manager</h1>
+            <nav class="nav">
+                <button class="nav-btn active" data-section="essays">
+                    <i class="fas fa-file-alt"></i> My Essays
+                </button>
+                <button class="nav-btn" data-section="new">
+                    <i class="fas fa-plus"></i> New Essay
+                </button>
+                <button class="nav-btn" data-section="colleges">
+                    <i class="fas fa-university"></i> Colleges
+                </button>
+                <button class="nav-btn" data-section="stats">
+                    <i class="fas fa-chart-bar"></i> Statistics
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Essays Section -->
+            <section id="essays" class="section active">
+                <div class="section-header">
+                    <h2>My Essays</h2>
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" placeholder="Search essays...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="filter-bar">
+                        <select id="categoryFilter">
+                            <option value="">All Categories</option>
+                            <option value="personal">Personal Statement</option>
+                            <option value="supplemental">Supplemental</option>
+                            <option value="scholarship">Scholarship</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <select id="collegeFilter">
+                            <option value="">All Colleges</option>
+                        </select>
+                        <select id="sortBy">
+                            <option value="date">Sort by Date</option>
+                            <option value="title">Sort by Title</option>
+                            <option value="wordCount">Sort by Word Count</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="essays-grid" id="essaysGrid">
+                    <!-- Essays will be dynamically loaded here -->
+                </div>
+                
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>No essays yet</h3>
+                    <p>Start by creating your first college essay!</p>
+                    <button class="btn btn-primary" onclick="showSection('new')">
+                        <i class="fas fa-plus"></i> Create Essay
+                    </button>
+                </div>
+            </section>
+
+            <!-- New Essay Section -->
+            <section id="new" class="section">
+                <div class="section-header">
+                    <h2>Create New Essay</h2>
+                    <button class="btn btn-secondary" onclick="toggleAIAssistant()">
+                        <i class="fas fa-robot"></i> AI Writing Assistant
+                    </button>
+                </div>
+                
+                <div class="essay-workspace">
+                    <div class="essay-editor">
+                        <form class="essay-form" id="essayForm">
+                    <div class="form-group">
+                        <label for="essayTitle">Essay Title</label>
+                        <input type="text" id="essayTitle" placeholder="Enter essay title..." required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="essayCategory">Category</label>
+                            <select id="essayCategory" required>
+                                <option value="">Select category...</option>
+                                <option value="personal">Personal Statement</option>
+                                <option value="supplemental">Supplemental Essay</option>
+                                <option value="scholarship">Scholarship Essay</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="essayDeadline">Deadline (Optional)</label>
+                            <input type="date" id="essayDeadline">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="essayCollege">College/University (Optional)</label>
+                        <select id="essayCollege">
+                            <option value="">Select college...</option>
+                        </select>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="showAddCollegeModal()">
+                            <i class="fas fa-plus"></i> Add College
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="essayContent">Essay Content</label>
+                        <div class="editor-container">
+                            <textarea id="essayContent" placeholder="Start writing your essay here..." rows="15"></textarea>
+                            <div class="editor-tools">
+                                <div class="word-count">
+                                    <span id="wordCount">0 words</span>
+                                </div>
+                                <div class="editor-buttons">
+                                    <button type="button" class="btn btn-secondary" onclick="clearEssay()">
+                                        <i class="fas fa-trash"></i> Clear
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" onclick="saveDraft()">
+                                        <i class="fas fa-save"></i> Save Draft
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="showSection('essays')">
+                            <i class="fas fa-arrow-left"></i> Back to Essays
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Essay
+                        </button>
+                    </div>
+                </form>
+                    </div>
+                    
+                    <!-- AI Writing Assistant Sidebar -->
+                    <div class="ai-assistant" id="aiAssistant">
+                        <div class="ai-header">
+                            <h3><i class="fas fa-robot"></i> AI Writing Assistant</h3>
+                            <button class="ai-close" onclick="toggleAIAssistant()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="ai-chat" id="aiChat">
+                            <div class="ai-message">
+                                <div class="ai-avatar">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="ai-content">
+                                    <p>Hi! I'm your AI writing assistant. I can help you with:</p>
+                                    <ul>
+                                        <li>Brainstorming essay topics</li>
+                                        <li>Improving your writing</li>
+                                        <li>Answering questions about college essays</li>
+                                        <li>Providing writing prompts</li>
+                                    </ul>
+                                    <p>What would you like help with today?</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="ai-quick-prompts">
+                            <h4>Quick Prompts</h4>
+                            <div class="prompt-buttons">
+                                <button class="prompt-btn" onclick="sendAIMessage('Help me brainstorm ideas for my personal statement')">
+                                    <i class="fas fa-lightbulb"></i> Brainstorm Ideas
+                                </button>
+                                <button class="prompt-btn" onclick="sendAIMessage('Analyze my essay and suggest improvements')">
+                                    <i class="fas fa-search"></i> Analyze Essay
+                                </button>
+                                <button class="prompt-btn" onclick="sendAIMessage('Help me improve my essay opening')">
+                                    <i class="fas fa-play"></i> Improve Opening
+                                </button>
+                                <button class="prompt-btn" onclick="sendAIMessage('Check my essay for grammar and style')">
+                                    <i class="fas fa-spell-check"></i> Grammar Check
+                                </button>
+                                <button class="prompt-btn" onclick="sendAIMessage('Make my essay more engaging and specific')">
+                                    <i class="fas fa-pen"></i> Enhance Writing
+                                </button>
+                                <button class="prompt-btn" onclick="sendAIMessage('Help me strengthen my conclusion')">
+                                    <i class="fas fa-stop"></i> Strong Conclusion
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="ai-input-area">
+                            <div class="ai-input-group">
+                                <textarea id="aiInput" placeholder="Ask me anything about your essay..." rows="2"></textarea>
+                                <button class="ai-send-btn" onclick="sendAIMessage()">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Statistics Section -->
+            <section id="stats" class="section">
+                <div class="section-header">
+                    <h2>Statistics</h2>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalEssays">0</h3>
+                            <p>Total Essays</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-keyboard"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalWords">0</h3>
+                            <p>Total Words</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="completedEssays">0</h3>
+                            <p>Completed Essays</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="avgWords">0</h3>
+                            <p>Average Words/Essay</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="category-stats">
+                    <h3>Essays by Category</h3>
+                    <div class="category-chart" id="categoryChart">
+                        <!-- Category breakdown will be shown here -->
+                    </div>
+                </div>
+                
+                <div class="college-stats">
+                    <h3>Essays by College</h3>
+                    <div class="college-chart" id="collegeChart">
+                        <!-- College breakdown will be shown here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Colleges Section -->
+            <section id="colleges" class="section">
+                <div class="section-header">
+                    <h2>My Colleges</h2>
+                    <div class="college-controls">
+                        <select id="statusFilter">
+                            <option value="">All Statuses</option>
+                            <option value="not-started">Not Started</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="submitted">Submitted</option>
+                            <option value="accepted">Accepted</option>
+                            <option value="waitlisted">Waitlisted</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="showAddCollegeModal()">
+                            <i class="fas fa-plus"></i> Add College
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="colleges-grid" id="collegesGrid">
+                    <!-- Colleges will be dynamically loaded here -->
+                </div>
+                
+                <div class="empty-state" id="collegesEmptyState" style="display: none;">
+                    <i class="fas fa-university"></i>
+                    <h3>No colleges added yet</h3>
+                    <p>Add the colleges you're applying to organize your essays!</p>
+                    <button class="btn btn-primary" onclick="showAddCollegeModal()">
+                        <i class="fas fa-plus"></i> Add College
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Essay Modal -->
+    <div class="modal" id="essayModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle"></h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="essay-meta">
+                    <span class="category-badge" id="modalCategory"></span>
+                    <span class="word-count-badge" id="modalWordCount"></span>
+                    <span class="date-badge" id="modalDate"></span>
+                </div>
+                <div class="essay-content" id="modalContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                <button class="btn btn-primary" onclick="editEssay()">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="btn btn-danger" onclick="deleteEssay()">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add College Modal -->
+    <div class="modal" id="addCollegeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New College</h3>
+                <button class="modal-close" onclick="closeAddCollegeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addCollegeForm">
+                    <div class="form-group">
+                        <label for="collegeName">College/University Name</label>
+                        <input type="text" id="collegeName" placeholder="e.g., Harvard University" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="collegeLocation">Location (Optional)</label>
+                        <input type="text" id="collegeLocation" placeholder="e.g., Cambridge, MA">
+                    </div>
+                    <div class="form-group">
+                        <label for="collegeDeadline">Application Deadline (Optional)</label>
+                        <input type="date" id="collegeDeadline">
+                    </div>
+                    <div class="form-group">
+                        <label for="collegeStatus">Application Status</label>
+                        <select id="collegeStatus" required>
+                            <option value="">Select status...</option>
+                            <option value="not-started">Not Started</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="submitted">Submitted</option>
+                            <option value="accepted">Accepted</option>
+                            <option value="waitlisted">Waitlisted</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="collegeNotes">Notes (Optional)</label>
+                        <textarea id="collegeNotes" placeholder="Any additional notes about this college..." rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAddCollegeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveCollege()">
+                    <i class="fas fa-save"></i> Save College
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
